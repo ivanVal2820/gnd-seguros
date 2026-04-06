@@ -1,0 +1,31 @@
+services:
+  web:
+    build: .
+    container_name: gnd_seguros_web
+    environment:
+      - PORT=3002
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/gnd_seguros
+    depends_on:
+      - postgres
+    ports:
+      - "127.0.0.1:3002:3002"
+    volumes:
+      - ./storage:/app/storage
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    container_name: gnd_seguros_db
+    environment:
+      POSTGRES_DB: gnd_seguros
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - gnd_seguros_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"
+
+volumes:
+  gnd_seguros_pgdata:
