@@ -1,6 +1,9 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      args:
+        DATABASE_URL: postgresql://postgres:postgres@postgres:5432/gnd_seguros
     container_name: gnd_seguros_web
     environment:
       - PORT=3002

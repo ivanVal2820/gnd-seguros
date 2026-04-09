@@ -63,6 +63,7 @@ export default function ProtectedShell({ user, children }: Props) {
   { href: "/dashboard", label: "Dashboard" },
   { href: "/polizas", label: "Pólizas" },
   { href: "/aseguradoras", label: "Aseguradoras" },
+  { href: "/licitaciones", label: "Licitaciones" },
 ];
 
     const canAdmin = user.role === "SUPERADMIN" || user.role === "LEGAL_ADMIN";

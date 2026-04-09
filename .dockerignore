@@ -1,2 +1,9 @@
 # dependencies
 /node_modules
+.next
+.git
+storage
+npm-debug.log
+.env
+.env.local
+.env.production

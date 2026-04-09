@@ -12,3 +12,84 @@ model User {
   name  String?
   role  String @default("USER")
 }
+
+model Insurer {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  code      String?  @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  policies  Policy[]
+}
+
+model Policy {
+  id              String             @id @default(cuid())
+  policyNumber    String             @unique
+  branch          String?
+  insuredName     String?
+  policyType      String?
+  status          String             @default("EN_PROCESO")
+  startDate       DateTime?
+  endDate         DateTime?
+  siteManager     String?
+  insurerId       String
+  insurer         Insurer            @relation(fields: [insurerId], references: [id])
+  paymentMethod   String?
+  brokerName      String?
+  brokerContact   String?
+  brokerEmail     String?
+  brokerPhone     String?
+  currency        String?            @default("MXN")
+  policyCost      Decimal?           @db.Decimal(14, 2)
+  issuanceCost    Decimal?           @db.Decimal(14, 2)
+  vat             Decimal?           @db.Decimal(14, 2)
+  grandTotal      Decimal?           @db.Decimal(14, 2)
+  notes           String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  attachments     PolicyAttachment[]
+}
+
+model PolicyAttachment {
+  id           String   @id @default(cuid())
+  policyId     String
+  policy       Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  type         String
+  originalName String
+  storagePath  String
+  mimeType     String?
+  sizeBytes    Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([policyId, type])
+}
+
+model Tender {
+  id           String   @id @default(cuid())
+  year         Int
+  title        String
+  description  String?
+  originalName String
+  storagePath  String
+  mimeType     String?
+  sizeBytes    Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model CatalogItem {
+  id          String   @id @default(cuid())
+  category    String
+  code        String?
+  label       String
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([category, label])
+}
