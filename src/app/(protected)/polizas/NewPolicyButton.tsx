@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import GndModal from "@/components/ui/GndModal";
 import { createPolicy } from "./actions";
 
+type CatalogOption = {
+  id: string;
+  label: string;
+};
+
 type InsurerOption = {
   id: string;
   name: string;
@@ -12,9 +17,12 @@ type InsurerOption = {
 
 type Props = {
   insurers: InsurerOption[];
+  branches: CatalogOption[];
+  policyTypes: CatalogOption[];
+  paymentMethods: CatalogOption[];
 };
 
-export default function NewPolicyButton({ insurers }: Props) {
+export default function NewPolicyButton({ insurers, branches, policyTypes, paymentMethods }: Props) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -57,16 +65,33 @@ export default function NewPolicyButton({ insurers }: Props) {
       >
         <form action={onSubmit} className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <input name="policyNumber" placeholder="Número de póliza" className="rounded-lg border px-3 py-2 text-sm" required disabled={pending} />
-          <input name="branch" placeholder="Ramo" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
+          <select
+            name="branch"
+            className="rounded-lg border px-3 py-2 text-sm"
+            defaultValue=""
+            disabled={pending}
+          >
+            <option value="">Ramo</option>
+            {branches.map((item) => (
+              <option key={item.id} value={item.label}>
+                {item.label}
+              </option>
+            ))}
+          </select>
           <input name="insuredName" placeholder="Asegurado" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
 
-          <select name="policyType" className="rounded-lg border px-3 py-2 text-sm" defaultValue="" disabled={pending}>
+          <select
+            name="policyType"
+            className="rounded-lg border px-3 py-2 text-sm"
+            defaultValue=""
+            disabled={pending}
+          >
             <option value="">Tipo de póliza</option>
-            <option value="MAESTRA">Maestra</option>
-            <option value="INDIVIDUAL">Individual</option>
-            <option value="COLECTIVA">Colectiva</option>
-            <option value="FLOTILLA">Flotilla</option>
-            <option value="FAM_GTZ">Fam. Gtz.</option>
+            {policyTypes.map((item) => (
+              <option key={item.id} value={item.label}>
+                {item.label}
+              </option>
+            ))}
           </select>
 
           <select name="status" className="rounded-lg border px-3 py-2 text-sm" defaultValue="EN_PROCESO" disabled={pending}>
@@ -89,7 +114,19 @@ export default function NewPolicyButton({ insurers }: Props) {
             ))}
           </select>
 
-          <input name="paymentMethod" placeholder="Forma de pago" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
+          <select
+            name="paymentMethod"
+            className="rounded-lg border px-3 py-2 text-sm"
+            defaultValue=""
+            disabled={pending}
+          >
+            <option value="">Forma de pago</option>
+            {paymentMethods.map((item) => (
+              <option key={item.id} value={item.label}>
+                {item.label}
+              </option>
+            ))}
+          </select>
           <input name="brokerName" placeholder="Broker - nombre" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
           <input name="brokerContact" placeholder="Broker - contacto" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
           <input name="brokerEmail" placeholder="Broker - correo electrónico" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />

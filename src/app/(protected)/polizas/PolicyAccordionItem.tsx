@@ -49,6 +49,14 @@ type PolicyItem = {
 type Props = {
   policy: PolicyItem;
   insurers: InsurerOption[];
+  branches: CatalogOption[];
+  policyTypes: CatalogOption[];
+  paymentMethods: CatalogOption[];
+};
+
+type CatalogOption = {
+  id: string;
+  label: string;
 };
 
 function formatDate(value: Date | null) {
@@ -76,7 +84,13 @@ function statusBadge(status: string) {
   }
 }
 
-export default function PolicyAccordionItem({ policy, insurers }: Props) {
+export default function PolicyAccordionItem({
+  policy,
+  insurers,
+  branches,
+  policyTypes,
+  paymentMethods,
+}: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -149,7 +163,13 @@ export default function PolicyAccordionItem({ policy, insurers }: Props) {
               Ver carátula PDF
             </a>
 
-            <EditPolicyButton policy={policy} insurers={insurers} />
+            <EditPolicyButton
+              policy={policy}
+              insurers={insurers}
+              branches={branches}
+              policyTypes={policyTypes}
+              paymentMethods={paymentMethods}
+            />
             <DeletePolicyButton id={policy.id} title={policy.policyNumber} />
           </div>
 

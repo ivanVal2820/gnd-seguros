@@ -26,14 +26,7 @@ export default async function PolizasPage({
   const where = {
     ...(status ? { status } : {}),
     ...(insurerId ? { insurerId } : {}),
-    ...(branch
-      ? {
-          branch: {
-            contains: branch,
-            mode: "insensitive" as const,
-          },
-        }
-      : {}),
+    ...(branch ? { branch } : {}),
     ...(q
       ? {
           OR: [
@@ -54,7 +47,7 @@ export default async function PolizasPage({
       : {}),
   };
 
-  const [policies, insurers] = await Promise.all([
+  const [policies, insurers, branches, policyTypes, paymentMethods] = await Promise.all([
     prisma.policy.findMany({
       where,
       include: { insurer: true, attachments: true },
@@ -63,6 +56,18 @@ export default async function PolizasPage({
     prisma.insurer.findMany({
       where: { isActive: true },
       orderBy: { name: "asc" },
+    }),
+    prisma.catalogItem.findMany({
+      where: { category: "POLICY_BRANCH", isActive: true },
+      orderBy: [{ sortOrder: "asc" }, { label: "asc" }],
+    }),
+    prisma.catalogItem.findMany({
+      where: { category: "POLICY_TYPE", isActive: true },
+      orderBy: [{ sortOrder: "asc" }, { label: "asc" }],
+    }),
+    prisma.catalogItem.findMany({
+      where: { category: "PAYMENT_METHOD", isActive: true },
+      orderBy: [{ sortOrder: "asc" }, { label: "asc" }],
     }),
   ]);
 
@@ -76,7 +81,12 @@ export default async function PolizasPage({
           </p>
         </div>
 
-        <NewPolicyButton insurers={insurers} />
+        <NewPolicyButton
+          insurers={insurers}
+          branches={branches}
+          policyTypes={policyTypes}
+          paymentMethods={paymentMethods}
+        />
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
@@ -132,12 +142,18 @@ export default async function PolizasPage({
             <label className="mb-1 block text-sm font-medium text-gray-700">
               Ramo
             </label>
-            <input
+            <select
               name="branch"
               defaultValue={branch}
-              placeholder="Ej. Daños"
               className="w-full rounded-lg border px-3 py-2 text-sm"
-            />
+            >
+              <option value="">Todos</option>
+              {branches.map((item) => (
+                <option key={item.id} value={item.label}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="flex items-end gap-2">
@@ -169,6 +185,9 @@ export default async function PolizasPage({
               key={policy.id}
               policy={policy}
               insurers={insurers}
+              branches={branches}
+              policyTypes={policyTypes}
+              paymentMethods={paymentMethods}
             />
           ))
         )}

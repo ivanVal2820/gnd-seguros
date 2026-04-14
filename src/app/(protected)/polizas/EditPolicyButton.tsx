@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import GndModal from "@/components/ui/GndModal";
 import { updatePolicy } from "./actions";
 
+type CatalogOption = {
+  id: string;
+  label: string;
+};
+
 type InsurerOption = {
   id: string;
   name: string;
@@ -37,6 +42,9 @@ type PolicyItem = {
 type Props = {
   policy: PolicyItem;
   insurers: InsurerOption[];
+  branches: CatalogOption[];
+  policyTypes: CatalogOption[];
+  paymentMethods: CatalogOption[];
 };
 
 function toDateInputValue(date: Date | null) {
@@ -49,7 +57,13 @@ function decimalToString(value: unknown) {
   return String(value);
 }
 
-export default function EditPolicyButton({ policy, insurers }: Props) {
+export default function EditPolicyButton({
+  policy,
+  insurers,
+  branches,
+  policyTypes,
+  paymentMethods,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -94,16 +108,33 @@ export default function EditPolicyButton({ policy, insurers }: Props) {
           <input type="hidden" name="id" value={policy.id} />
 
           <input name="policyNumber" defaultValue={policy.policyNumber} placeholder="Número de póliza" className="rounded-lg border px-3 py-2 text-sm" required disabled={pending} />
-          <input name="branch" defaultValue={policy.branch ?? ""} placeholder="Ramo" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
+          <select
+            name="branch"
+            defaultValue={policy.branch ?? ""}
+            className="rounded-lg border px-3 py-2 text-sm"
+            disabled={pending}
+          >
+            <option value="">Ramo</option>
+            {branches.map((item) => (
+              <option key={item.id} value={item.label}>
+                {item.label}
+              </option>
+            ))}
+          </select>
           <input name="insuredName" defaultValue={policy.insuredName ?? ""} placeholder="Asegurado" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
 
-          <select name="policyType" defaultValue={policy.policyType ?? ""} className="rounded-lg border px-3 py-2 text-sm" disabled={pending}>
+          <select
+            name="policyType"
+            defaultValue={policy.policyType ?? ""}
+            className="rounded-lg border px-3 py-2 text-sm"
+            disabled={pending}
+          >
             <option value="">Tipo de póliza</option>
-            <option value="MAESTRA">Maestra</option>
-            <option value="INDIVIDUAL">Individual</option>
-            <option value="COLECTIVA">Colectiva</option>
-            <option value="FLOTILLA">Flotilla</option>
-            <option value="FAM_GTZ">Fam. Gtz.</option>
+            {policyTypes.map((item) => (
+              <option key={item.id} value={item.label}>
+                {item.label}
+              </option>
+            ))}
           </select>
 
           <select name="status" defaultValue={policy.status} className="rounded-lg border px-3 py-2 text-sm" disabled={pending}>
@@ -125,7 +156,19 @@ export default function EditPolicyButton({ policy, insurers }: Props) {
             ))}
           </select>
 
-          <input name="paymentMethod" defaultValue={policy.paymentMethod ?? ""} placeholder="Forma de pago" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
+          <select
+            name="paymentMethod"
+            defaultValue={policy.paymentMethod ?? ""}
+            className="rounded-lg border px-3 py-2 text-sm"
+            disabled={pending}
+          >
+            <option value="">Forma de pago</option>
+            {paymentMethods.map((item) => (
+              <option key={item.id} value={item.label}>
+                {item.label}
+              </option>
+            ))}
+          </select>
           <input name="brokerName" defaultValue={policy.brokerName ?? ""} placeholder="Broker - nombre" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
           <input name="brokerContact" defaultValue={policy.brokerContact ?? ""} placeholder="Broker - contacto" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
           <input name="brokerEmail" defaultValue={policy.brokerEmail ?? ""} placeholder="Broker - correo electrónico" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
