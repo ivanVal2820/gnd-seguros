@@ -3,6 +3,7 @@ import NewTenderButton from "./NewTenderButton";
 import DeleteTenderButton from "./DeleteTenderButton";
 import ReplaceTenderFileButton from "./ReplaceTenderFileButton";
 import EditTenderButton from "./EditTenderButton";
+import { requireUser } from "@/lib/authorization";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ export default async function LicitacionesPage({
 }: {
   searchParams: SearchParams;
 }) {
+    await requireUser();
   const params = await searchParams;
 
   const year = params.year?.trim() || "";

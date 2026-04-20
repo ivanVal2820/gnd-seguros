@@ -9,7 +9,7 @@ export default function LoginCard() {
       <div className="bg-[#043230] px-6 py-5 text-white">
         <div className="mb-3 flex justify-center">
           <img
-            src={withBase("/contracts/brand/ico1.png")}
+            src={withBase("/brand/ico1.png")}
             alt="GND"
             className="h-12 w-12 object-contain"
           />
@@ -31,7 +31,7 @@ export default function LoginCard() {
           className="w-full rounded-md bg-[#183752] px-4 py-2 text-sm font-medium text-white hover:opacity-95"
           onClick={() =>
             signIn("azure-ad", {
-              callbackUrl: "/contracts/dashboard",
+              callbackUrl: "/seguros/polizas",
             })
           }
         >

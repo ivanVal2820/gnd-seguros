@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import NewPolicyButton from "./NewPolicyButton";
 import PolicyAccordionItem from "./PolicyAccordionItem";
+import { requireUser } from "@/lib/authorization";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ export default async function PolizasPage({
 }: {
   searchParams: SearchParams;
 }) {
+    await requireUser();
   const params = await searchParams;
 
   const q = params.q?.trim() || "";

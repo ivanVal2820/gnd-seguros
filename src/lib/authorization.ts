@@ -1,53 +1,40 @@
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-export type AppRole = "USER" | "LEGAL_ADMIN" | "SUPERADMIN";
+export type AppRole = "SUPERADMIN" | "USER";
 
-type RequireUserResult =
-  | {
-      ok: true;
-      email: string;
-      role: AppRole;
-      name?: string | null;
-    }
-  | {
-      ok: false;
-      status: 401 | 403;
-    };
+export async function requireSessionEmail() {
+  const session = await auth();
+  const email =
+    typeof session?.user?.email === "string"
+      ? session.user.email.toLowerCase()
+      : null;
 
-const DEMO_EMAIL = "demo@gndproperties.mx";
-
-function isAppRole(value: string): value is AppRole {
-  return value === "USER" || value === "LEGAL_ADMIN" || value === "SUPERADMIN";
+  if (!email) return { ok: false as const, status: 401 as const };
+  return { ok: true as const, email };
 }
 
-export async function requireUser(): Promise<RequireUserResult> {
+export async function requireUser() {
+  const s = await requireSessionEmail();
+  if (!s.ok) return s;
+
   const user = await prisma.user.findUnique({
-    where: { email: DEMO_EMAIL },
+    where: { email: s.email },
   });
 
-  if (!user) {
-    return { ok: false, status: 401 };
-  }
+  if (!user) return { ok: false as const, status: 401 as const };
+  if (!user.isActive) return { ok: false as const, status: 403 as const };
 
-  if (!isAppRole(user.role)) {
-    return { ok: false, status: 403 };
-  }
-
-  return {
-    ok: true,
-    email: user.email,
-    name: user.name,
-    role: user.role,
-  };
+  return { ok: true as const, email: s.email, user };
 }
 
-export async function requireRole(roles: AppRole[]): Promise<RequireUserResult> {
-  const userResult = await requireUser();
-  if (!userResult.ok) return userResult;
+export async function requireRole(roles: AppRole[]) {
+  const s = await requireUser();
+  if (!s.ok) return s;
 
-  if (!roles.includes(userResult.role)) {
-    return { ok: false, status: 403 };
+  if (!roles.includes(s.user.role as AppRole)) {
+    return { ok: false as const, status: 403 as const };
   }
 
-  return userResult;
+  return s;
 }

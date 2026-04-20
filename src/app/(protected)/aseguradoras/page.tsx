@@ -2,10 +2,12 @@ import { prisma } from "@/lib/prisma";
 import NewInsurerButton from "./NewInsurerButton";
 import DeleteInsurerButton from "./DeleteInsurerButton";
 import EditInsurerButton from "./EditInsurerButton";
+import { requireUser } from "@/lib/authorization";
 
 export const dynamic = "force-dynamic";
 
 export default async function AseguradorasPage() {
+  await requireUser();
   const insurers = await prisma.insurer.findMany({
     orderBy: { name: "asc" },
   });

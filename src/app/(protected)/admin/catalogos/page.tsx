@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import NewCatalogItemButton from "./NewCatalogItemButton";
 import EditCatalogItemButton from "./EditCatalogItemButton";
 import DeleteCatalogItemButton from "./DeleteCatalogItemButton";
+import { requireRole } from "@/lib/authorization";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ export default async function CatalogosPage({
 }: {
   searchParams: SearchParams;
 }) {
+    await requireRole(["USER", "SUPERADMIN"]);
   const params = await searchParams;
   const category = params.category?.trim() || "POLICY_BRANCH";
 

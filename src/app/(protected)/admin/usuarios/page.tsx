@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import NewUserButton from "./NewUserButton";
 import EditUserButton from "./EditUserButton";
+import { requireRole } from "@/lib/authorization";
 
 export const dynamic = "force-dynamic";
 
 export default async function UsuariosPage() {
+    await requireRole(["SUPERADMIN"]);
   const users = await prisma.user.findMany({
     orderBy: [{ role: "asc" }, { email: "asc" }],
   });

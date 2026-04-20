@@ -8,7 +8,7 @@ export default function Providers({
   children: React.ReactNode;
 }) {
   return (
-    <SessionProvider basePath="/contracts/api/auth">
+    <SessionProvider basePath="/seguros/api/auth">
       {children}
     </SessionProvider>
   );

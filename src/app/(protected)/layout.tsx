@@ -8,18 +8,33 @@ export default async function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await requireUser();
+  const result = await requireUser();
 
-  if (!user.ok) {
-    return <div>No autorizado</div>;
+  if (!result.ok) {
+    return (
+      <div className="p-6">
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h1 className="text-xl font-semibold text-gray-900">Acceso restringido</h1>
+          <p className="mt-2 text-sm text-gray-600">
+            Inicia sesión con una cuenta autorizada de GND Properties.
+          </p>
+          <a
+            href="/seguros/login"
+            className="mt-4 inline-flex rounded-lg bg-[#043230] px-4 py-2 text-sm font-medium text-white"
+          >
+            Ir a login
+          </a>
+        </div>
+      </div>
+    );
   }
 
   return (
     <ProtectedShell
       user={{
-        email: user.email,
-        name: user.name ?? undefined,
-        role: user.role,
+        email: result.user.email,
+        name: result.user.name ?? undefined,
+        role: result.user.role as "USER" | "SUPERADMIN",
       }}
     >
       {children}
