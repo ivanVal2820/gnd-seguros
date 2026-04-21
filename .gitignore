@@ -8,8 +8,10 @@ out
 
 # Env
 .env
-.env.local
+.env.dev
 .env.production
+.env.local
+.env.*.local
 
 # Logs
 logs

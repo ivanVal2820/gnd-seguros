@@ -73,6 +73,14 @@ export default async function PolizasPage({
     }),
   ]);
 
+  const serializedPolicies = policies.map((policy) => ({
+  ...policy,
+  policyCost: policy.policyCost ? policy.policyCost.toString() : null,
+  issuanceCost: policy.issuanceCost ? policy.issuanceCost.toString() : null,
+  vat: policy.vat ? policy.vat.toString() : null,
+  grandTotal: policy.grandTotal ? policy.grandTotal.toString() : null,
+}));
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
@@ -118,6 +126,7 @@ export default async function PolizasPage({
               <option value="ACTIVA">Activa</option>
               <option value="POR_VENCER">Por vencer</option>
               <option value="EN_PROCESO">En proceso</option>
+              <option value="VENCIDO">Vencido</option>
               <option value="HISTORICO">Histórico</option>
             </select>
           </div>
@@ -182,7 +191,7 @@ export default async function PolizasPage({
             No hay pólizas que coincidan con el filtro.
           </div>
         ) : (
-          policies.map((policy) => (
+          serializedPolicies.map((policy) => (
             <PolicyAccordionItem
               key={policy.id}
               policy={policy}

@@ -77,10 +77,29 @@ function statusBadge(status: string) {
       return "bg-yellow-100 text-yellow-700";
     case "EN_PROCESO":
       return "bg-blue-100 text-blue-700";
+    case "VENCIDO":
+      return "bg-red-100 text-red-700";
     case "HISTORICO":
       return "bg-gray-100 text-gray-600";
     default:
       return "bg-gray-100 text-gray-600";
+  }
+}
+
+function statusLabel(status: string) {
+  switch (status) {
+    case "ACTIVA":
+      return "Activa";
+    case "POR_VENCER":
+      return "Por vencer";
+    case "EN_PROCESO":
+      return "En proceso";
+    case "VENCIDO":
+      return "Vencido";
+    case "HISTORICO":
+      return "Histórico";
+    default:
+      return status;
   }
 }
 
@@ -111,7 +130,7 @@ export default function PolicyAccordionItem({
                 policy.status
               )}`}
             >
-              {policy.status}
+              {statusLabel(policy.status)}
             </span>
           </div>
 
@@ -133,7 +152,7 @@ export default function PolicyAccordionItem({
             <div><span className="font-medium">Ramo:</span> {policy.branch || "-"}</div>
             <div><span className="font-medium">Asegurado:</span> {policy.insuredName || "-"}</div>
             <div><span className="font-medium">Tipo:</span> {policy.policyType || "-"}</div>
-            <div><span className="font-medium">Estatus:</span> {policy.status}</div>
+            <div><span className="font-medium">Estatus:</span> {statusLabel(policy.status)}</div>
             <div><span className="font-medium">Aseguradora:</span> {policy.insurer.name}</div>
             <div><span className="font-medium">Inicio:</span> {formatDate(policy.startDate)}</div>
             <div><span className="font-medium">Fin:</span> {formatDate(policy.endDate)}</div>

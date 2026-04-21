@@ -57,6 +57,31 @@ function decimalToString(value: unknown) {
   return String(value);
 }
 
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label className="mb-1 block text-sm font-medium text-gray-700">
+      {children}
+    </label>
+  );
+}
+
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-700">
+        {title}
+      </h3>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">{children}</div>
+    </div>
+  );
+}
+
 export default function EditPolicyButton({
   policy,
   insurers,
@@ -104,101 +129,273 @@ export default function EditPolicyButton({
           }
         }}
       >
-        <form action={onSubmit} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <form action={onSubmit} className="space-y-4">
           <input type="hidden" name="id" value={policy.id} />
 
-          <input name="policyNumber" defaultValue={policy.policyNumber} placeholder="Número de póliza" className="rounded-lg border px-3 py-2 text-sm" required disabled={pending} />
-          <select
-            name="branch"
-            defaultValue={policy.branch ?? ""}
-            className="rounded-lg border px-3 py-2 text-sm"
-            disabled={pending}
-          >
-            <option value="">Ramo</option>
-            {branches.map((item) => (
-              <option key={item.id} value={item.label}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-          <input name="insuredName" defaultValue={policy.insuredName ?? ""} placeholder="Asegurado" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
+          <Section title="Datos generales">
+            <div>
+              <FieldLabel>Número de póliza</FieldLabel>
+              <input
+                name="policyNumber"
+                defaultValue={policy.policyNumber}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                required
+                disabled={pending}
+              />
+            </div>
 
-          <select
-            name="policyType"
-            defaultValue={policy.policyType ?? ""}
-            className="rounded-lg border px-3 py-2 text-sm"
-            disabled={pending}
-          >
-            <option value="">Tipo de póliza</option>
-            {policyTypes.map((item) => (
-              <option key={item.id} value={item.label}>
-                {item.label}
-              </option>
-            ))}
-          </select>
+            <div>
+              <FieldLabel>Ramo</FieldLabel>
+              <select
+                name="branch"
+                defaultValue={policy.branch ?? ""}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              >
+                <option value="">Selecciona ramo</option>
+                {branches.map((item) => (
+                  <option key={item.id} value={item.label}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <select name="status" defaultValue={policy.status} className="rounded-lg border px-3 py-2 text-sm" disabled={pending}>
-            <option value="ACTIVA">Activa</option>
-            <option value="POR_VENCER">Por vencer</option>
-            <option value="EN_PROCESO">En proceso</option>
-            <option value="HISTORICO">Histórico</option>
-          </select>
+            <div>
+              <FieldLabel>Asegurado</FieldLabel>
+              <input
+                name="insuredName"
+                defaultValue={policy.insuredName ?? ""}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              />
+            </div>
 
-          <input name="startDate" type="date" defaultValue={toDateInputValue(policy.startDate)} className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
-          <input name="endDate" type="date" defaultValue={toDateInputValue(policy.endDate)} className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
-          <input name="siteManager" defaultValue={policy.siteManager ?? ""} placeholder="Responsable en sitio" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
+            <div>
+              <FieldLabel>Tipo de póliza</FieldLabel>
+              <select
+                name="policyType"
+                defaultValue={policy.policyType ?? ""}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              >
+                <option value="">Selecciona tipo</option>
+                {policyTypes.map((item) => (
+                  <option key={item.id} value={item.label}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <select name="insurerId" defaultValue={policy.insurerId} className="rounded-lg border px-3 py-2 text-sm" required disabled={pending}>
-            {insurers.map((insurer) => (
-              <option key={insurer.id} value={insurer.id}>
-                {insurer.name}
-              </option>
-            ))}
-          </select>
+            <div>
+              <FieldLabel>Estatus</FieldLabel>
+              <select
+                name="status"
+                defaultValue={policy.status}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              >
+                <option value="ACTIVA">Activa</option>
+                <option value="POR_VENCER">Por vencer</option>
+                <option value="EN_PROCESO">En proceso</option>
+                <option value="VENCIDO">Vencido</option>
+                <option value="HISTORICO">Histórico</option>
+              </select>
+            </div>
 
-          <select
-            name="paymentMethod"
-            defaultValue={policy.paymentMethod ?? ""}
-            className="rounded-lg border px-3 py-2 text-sm"
-            disabled={pending}
-          >
-            <option value="">Forma de pago</option>
-            {paymentMethods.map((item) => (
-              <option key={item.id} value={item.label}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-          <input name="brokerName" defaultValue={policy.brokerName ?? ""} placeholder="Broker - nombre" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
-          <input name="brokerContact" defaultValue={policy.brokerContact ?? ""} placeholder="Broker - contacto" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
-          <input name="brokerEmail" defaultValue={policy.brokerEmail ?? ""} placeholder="Broker - correo electrónico" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
-          <input name="brokerPhone" defaultValue={policy.brokerPhone ?? ""} placeholder="Broker - celular" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
+            <div>
+              <FieldLabel>Aseguradora</FieldLabel>
+              <select
+                name="insurerId"
+                defaultValue={policy.insurerId}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                required
+                disabled={pending}
+              >
+                {insurers.map((insurer) => (
+                  <option key={insurer.id} value={insurer.id}>
+                    {insurer.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </Section>
 
-          <select name="currency" defaultValue={policy.currency ?? "MXN"} className="rounded-lg border px-3 py-2 text-sm" disabled={pending}>
-            <option value="MXN">Pesos</option>
-            <option value="USD">Dólares</option>
-          </select>
+          <Section title="Vigencia y operación">
+            <div>
+              <FieldLabel>Vigencia inicio</FieldLabel>
+              <input
+                name="startDate"
+                type="date"
+                defaultValue={toDateInputValue(policy.startDate)}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              />
+            </div>
 
-          <input name="policyCost" type="number" step="0.01" defaultValue={decimalToString(policy.policyCost)} placeholder="Costo" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
-          <input name="issuanceCost" type="number" step="0.01" defaultValue={decimalToString(policy.issuanceCost)} placeholder="Costo emisión póliza" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
-          <input name="vat" type="number" step="0.01" defaultValue={decimalToString(policy.vat)} placeholder="IVA" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
-          <input name="grandTotal" type="number" step="0.01" defaultValue={decimalToString(policy.grandTotal)} placeholder="Gran total" className="rounded-lg border px-3 py-2 text-sm" disabled={pending} />
+            <div>
+              <FieldLabel>Vigencia término</FieldLabel>
+              <input
+                name="endDate"
+                type="date"
+                defaultValue={toDateInputValue(policy.endDate)}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              />
+            </div>
 
-          <textarea
-            name="notes"
-            defaultValue={policy.notes ?? ""}
-            placeholder="Notas"
-            className="md:col-span-2 min-h-[90px] rounded-lg border px-3 py-2 text-sm"
-            disabled={pending}
-          />
+            <div>
+              <FieldLabel>Responsable en sitio</FieldLabel>
+              <input
+                name="siteManager"
+                defaultValue={policy.siteManager ?? ""}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              />
+            </div>
+
+            <div>
+              <FieldLabel>Forma de pago</FieldLabel>
+              <select
+                name="paymentMethod"
+                defaultValue={policy.paymentMethod ?? ""}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              >
+                <option value="">Selecciona forma de pago</option>
+                {paymentMethods.map((item) => (
+                  <option key={item.id} value={item.label}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <FieldLabel>Moneda</FieldLabel>
+              <select
+                name="currency"
+                defaultValue={policy.currency ?? "MXN"}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              >
+                <option value="MXN">Pesos</option>
+                <option value="USD">Dólares</option>
+              </select>
+            </div>
+          </Section>
+
+          <Section title="Datos del broker">
+            <div>
+              <FieldLabel>Broker - nombre</FieldLabel>
+              <input
+                name="brokerName"
+                defaultValue={policy.brokerName ?? ""}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              />
+            </div>
+
+            <div>
+              <FieldLabel>Broker - contacto</FieldLabel>
+              <input
+                name="brokerContact"
+                defaultValue={policy.brokerContact ?? ""}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              />
+            </div>
+
+            <div>
+              <FieldLabel>Broker - correo electrónico</FieldLabel>
+              <input
+                name="brokerEmail"
+                type="email"
+                defaultValue={policy.brokerEmail ?? ""}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              />
+            </div>
+
+            <div>
+              <FieldLabel>Broker - celular</FieldLabel>
+              <input
+                name="brokerPhone"
+                defaultValue={policy.brokerPhone ?? ""}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              />
+            </div>
+          </Section>
+
+          <Section title="Importes">
+            <div>
+              <FieldLabel>Costo</FieldLabel>
+              <input
+                name="policyCost"
+                type="number"
+                step="0.01"
+                defaultValue={decimalToString(policy.policyCost)}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              />
+            </div>
+
+            <div>
+              <FieldLabel>Costo emisión póliza</FieldLabel>
+              <input
+                name="issuanceCost"
+                type="number"
+                step="0.01"
+                defaultValue={decimalToString(policy.issuanceCost)}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              />
+            </div>
+
+            <div>
+              <FieldLabel>IVA</FieldLabel>
+              <input
+                name="vat"
+                type="number"
+                step="0.01"
+                defaultValue={decimalToString(policy.vat)}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              />
+            </div>
+
+            <div>
+              <FieldLabel>Gran total</FieldLabel>
+              <input
+                name="grandTotal"
+                type="number"
+                step="0.01"
+                defaultValue={decimalToString(policy.grandTotal)}
+                className="w-full rounded-lg border px-3 py-2 text-sm"
+                disabled={pending}
+              />
+            </div>
+          </Section>
+
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <FieldLabel>Notas</FieldLabel>
+            <textarea
+              name="notes"
+              defaultValue={policy.notes ?? ""}
+              className="min-h-[110px] w-full rounded-lg border px-3 py-2 text-sm"
+              disabled={pending}
+            />
+          </div>
 
           {error ? (
-            <div className="md:col-span-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
               {error}
             </div>
           ) : null}
 
-          <div className="md:col-span-2 flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 border-t pt-4">
             <button
               type="button"
               onClick={() => {
