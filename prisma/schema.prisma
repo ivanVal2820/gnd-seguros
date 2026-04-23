@@ -54,6 +54,7 @@ model Policy {
   updatedAt       DateTime           @updatedAt
 
   attachments     PolicyAttachment[]
+  notifications PolicyNotificationLog[]
 }
 
 model PolicyAttachment {
@@ -95,4 +96,15 @@ model CatalogItem {
   updatedAt   DateTime @updatedAt
 
   @@unique([category, label])
+}
+
+model PolicyNotificationLog {
+  id        String   @id @default(cuid())
+  policyId  String
+  policy    Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  type      String
+  sentTo    String
+  sentAt    DateTime @default(now())
+
+  @@unique([policyId, type, sentTo])
 }

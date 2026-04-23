@@ -57,20 +57,22 @@ function NavLink({
 export default function ProtectedShell({ user, children }: Props) {
   const pathname = usePathname();
 
-  const links = useMemo(() => {
-    const base = [
-  { href: "/", label: "Inicio" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/polizas", label: "Pólizas" },
-  { href: "/aseguradoras", label: "Aseguradoras" },
-  { href: "/licitaciones", label: "Licitaciones" },
-];
+const links = useMemo(() => {
+  const base = [
+    { href: "/", label: "Inicio" },
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/polizas", label: "Pólizas" },
+    { href: "/aseguradoras", label: "Aseguradoras" },
+    { href: "/licitaciones", label: "Licitaciones" },
+    { href: "/admin/catalogos", label: "Catálogos" },
+  ];
 
-    const canAdmin = user.role === "SUPERADMIN" || user.role === "LEGAL_ADMIN";
-    if (canAdmin) base.push({ href: "/admin", label: "Admin" });
+  if (user.role === "SUPERADMIN") {
+    base.push({ href: "/admin/usuarios", label: "Usuarios" });
+  }
 
-    return base;
-  }, [user.role]);
+  return base;
+}, [user.role]);
 
   const displayName = user.name?.trim() ? user.name.trim() : user.email;
 
@@ -120,7 +122,7 @@ export default function ProtectedShell({ user, children }: Props) {
             </div>
 
             <button
-              onClick={() => signOut({ callbackUrl: "/seguros" })}
+              onClick={() => signOut({ callbackUrl: "/seguros/login" })}
               className="rounded-md px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
             >
               Cerrar sesión

@@ -8,6 +8,38 @@ type SearchParams = Promise<{
   month?: string;
 }>;
 
+function startOfToday() {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+function dateOnlyFromDb(date: Date) {
+  const ymd = date.toISOString().slice(0, 10);
+  const [y, m, d] = ymd.split("-").map(Number);
+  return new Date(y, (m ?? 1) - 1, d ?? 1);
+}
+
+function daysUntil(endDate: Date) {
+  const today = startOfToday();
+  const end = dateOnlyFromDb(endDate);
+  return Math.round((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+function urgencyClasses(daysLeft: number) {
+  if (daysLeft < 0) return "border-red-200 bg-red-50 text-red-800";
+  if (daysLeft <= 7) return "border-orange-200 bg-orange-50 text-orange-800";
+  if (daysLeft <= 30) return "border-yellow-200 bg-yellow-50 text-yellow-800";
+  if (daysLeft <= 90) return "border-blue-200 bg-blue-50 text-blue-800";
+  return "border-green-200 bg-green-50 text-green-800";
+}
+
+function urgencyLabel(daysLeft: number) {
+  if (daysLeft < 0) return "Vencida";
+  if (daysLeft === 0) return "Vence hoy";
+  if (daysLeft === 1) return "1 día";
+  return `${daysLeft} días`;
+}
+
 function getMonthRange(year: number, month: number) {
   const start = new Date(year, month - 1, 1);
   const end = new Date(year, month, 1);
@@ -246,20 +278,20 @@ export default async function DashboardPage({
 
       <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
         <div className="flex flex-wrap gap-2 text-xs">
-          <span className="inline-flex rounded-full border border-green-200 bg-green-100 px-3 py-1 font-medium text-green-700">
-            Activa
+          <span className="inline-flex rounded-full border border-red-200 bg-red-50 px-3 py-1 font-medium text-red-800">
+            Vencidas
           </span>
-          <span className="inline-flex rounded-full border border-yellow-200 bg-yellow-100 px-3 py-1 font-medium text-yellow-700">
-            Por vencer
+          <span className="inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-1 font-medium text-orange-800">
+            1–7 días
           </span>
-          <span className="inline-flex rounded-full border border-red-200 bg-red-100 px-3 py-1 font-medium text-red-700">
-            Vencido
+          <span className="inline-flex rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1 font-medium text-yellow-800">
+            8–30 días
           </span>
-          <span className="inline-flex rounded-full border border-blue-200 bg-blue-100 px-3 py-1 font-medium text-blue-700">
-            En proceso
+          <span className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1 font-medium text-blue-800">
+            31–90 días
           </span>
-          <span className="inline-flex rounded-full border border-gray-200 bg-gray-100 px-3 py-1 font-medium text-gray-600">
-            Histórico
+          <span className="inline-flex rounded-full border border-green-200 bg-green-50 px-3 py-1 font-medium text-green-800">
+            Más de 90 días
           </span>
         </div>
       </div>
@@ -309,33 +341,37 @@ export default async function DashboardPage({
                   </div>
 
                   <div className="space-y-2">
-                    {dayPolicies.map((policy) => (
-                      <a
-                        key={policy.id}
-                        href="/seguros/polizas"
-                        className="block rounded-xl border border-gray-200 bg-gray-50 p-2 hover:bg-gray-100"
-                      >
-                        <div className="truncate text-xs font-semibold text-gray-900">
-                          {policy.policyNumber}
-                        </div>
+                    {dayPolicies.map((policy) => {
+  const daysLeft = policy.endDate ? daysUntil(policy.endDate) : 0;
 
-                        <div className="truncate text-[11px] text-gray-600">
-                          {policy.insurer.name}
-                        </div>
+  return (
+    <a
+      key={policy.id}
+      href={`/seguros/polizas?q=${encodeURIComponent(policy.policyNumber)}`}
+      className={`block rounded-xl border p-2 transition hover:shadow-sm ${urgencyClasses(daysLeft)}`}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <div className="truncate text-xs font-semibold">
+            {policy.policyNumber}
+          </div>
 
-                        <div className="mt-1 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-medium">
-                          <span className={statusClasses(policy.status).replace("border-", "")}>
-                            <span
-                              className={`inline-flex rounded-full border px-2 py-0.5 ${statusClasses(
-                                policy.status
-                              )}`}
-                            >
-                              {statusLabel(policy.status)}
-                            </span>
-                          </span>
-                        </div>
-                      </a>
-                    ))}
+          <div className="truncate text-[11px] opacity-80">
+            {policy.insurer.name}
+          </div>
+        </div>
+
+        <span className="shrink-0 rounded-full bg-white/70 px-2 py-0.5 text-[10px] font-semibold">
+          {urgencyLabel(daysLeft)}
+        </span>
+      </div>
+
+      <div className="mt-1 truncate text-[11px] opacity-80">
+                            {policy.insuredName ?? "Sin asegurado"}
+                          </div>
+                        </a>
+                      );
+                    })}
                   </div>
                 </>
               ) : null}
