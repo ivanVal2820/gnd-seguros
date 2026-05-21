@@ -163,7 +163,7 @@ export default async function DashboardPage({
 
   for (const policy of policies) {
     if (!policy.endDate) continue;
-    const day = new Date(policy.endDate).getDate();
+    const day = policy.endDate.getDate();
     if (!policiesByDay.has(day)) {
       policiesByDay.set(day, []);
     }

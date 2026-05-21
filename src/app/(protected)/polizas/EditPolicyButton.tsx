@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import GndModal from "@/components/ui/GndModal";
 import { updatePolicy } from "./actions";
+import { toDateInputValue } from "@/lib/dateOnly";
 
 type CatalogOption = {
   id: string;
@@ -46,11 +47,6 @@ type Props = {
   policyTypes: CatalogOption[];
   paymentMethods: CatalogOption[];
 };
-
-function toDateInputValue(date: Date | null) {
-  if (!date) return "";
-  return new Date(date).toISOString().slice(0, 10);
-}
 
 function decimalToString(value: unknown) {
   if (value == null) return "";

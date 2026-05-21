@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { prisma } from "@/lib/prisma";
+import { formatDateOnly } from "@/lib/dateOnly";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +18,7 @@ function money(value: unknown, currency?: string | null) {
 }
 
 function dateMx(value: Date | null) {
-  if (!value) return "-";
-  return new Intl.DateTimeFormat("es-MX", { dateStyle: "medium" }).format(value);
+  return formatDateOnly(value);
 }
 
 function safeText(value: unknown) {
@@ -43,7 +43,7 @@ export async function GET(
     }
 
     const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([595.28, 841.89]); // A4
+    let page = pdfDoc.addPage([595.28, 841.89]); // A4
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
@@ -89,9 +89,8 @@ export async function GET(
 
     for (const [label, value] of rows) {
       if (y < 60) {
-        const newPage = pdfDoc.addPage([595.28, 841.89]);
+        page = pdfDoc.addPage([595.28, 841.89]);
         y = 791.89;
-        page.drawText("", { x: 0, y: 0, size: 1, font }); // noop para mantener tipos felices
       }
 
       page.drawText(`${label}:`, {

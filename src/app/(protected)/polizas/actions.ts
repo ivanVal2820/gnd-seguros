@@ -1,15 +1,21 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { parseDateOnly } from "@/lib/dateOnly";
 
 function toNullableString(value: FormDataEntryValue | null) {
   const s = String(value || "").trim();
   return s || null;
 }
 
-function toNullableDate(value: FormDataEntryValue | null) {
+/* function toNullableDate(value: FormDataEntryValue | null) {
   const s = String(value || "").trim();
   return s ? new Date(s) : null;
+} */
+
+function optionalDate(value: FormDataEntryValue | null) {
+  const s = String(value || "").trim();
+  return parseDateOnly(s);
 }
 
 function toNullableDecimal(value: FormDataEntryValue | null) {
@@ -31,8 +37,8 @@ export async function createPolicy(formData: FormData) {
       insuredName: toNullableString(formData.get("insuredName")),
       policyType: toNullableString(formData.get("policyType")),
       status: String(formData.get("status") || "EN_PROCESO").trim(),
-      startDate: toNullableDate(formData.get("startDate")),
-      endDate: toNullableDate(formData.get("endDate")),
+      startDate: optionalDate(formData.get("startDate")),
+      endDate: optionalDate(formData.get("endDate")),
       siteManager: toNullableString(formData.get("siteManager")),
       insurerId,
       paymentMethod: toNullableString(formData.get("paymentMethod")),
@@ -67,8 +73,8 @@ export async function updatePolicy(formData: FormData) {
       insuredName: toNullableString(formData.get("insuredName")),
       policyType: toNullableString(formData.get("policyType")),
       status: String(formData.get("status") || "EN_PROCESO").trim(),
-      startDate: toNullableDate(formData.get("startDate")),
-      endDate: toNullableDate(formData.get("endDate")),
+      startDate: optionalDate(formData.get("startDate")),
+      endDate: optionalDate(formData.get("endDate")),
       siteManager: toNullableString(formData.get("siteManager")),
       insurerId,
       paymentMethod: toNullableString(formData.get("paymentMethod")),
