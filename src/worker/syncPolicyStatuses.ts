@@ -1,6 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
+function subtractMonths(date: Date, months: number) {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() - months);
+  return result;
+}
+
 function startOfToday() {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -25,6 +31,7 @@ export async function syncPolicyStatuses() {
   try {
     const today = startOfToday();
     const threshold = addDays(today, 90);
+    const historicalThreshold = subtractMonths(today, 3);
 
     const candidates = await prisma.policy.findMany({
       where: {
@@ -49,15 +56,17 @@ export async function syncPolicyStatuses() {
       if (!policy.endDate) continue;
 
       const endDate = new Date(policy.endDate);
-      let nextStatus: "ACTIVA" | "POR_VENCER" | "VENCIDO";
+      let nextStatus: "ACTIVA" | "POR_VENCER" | "VENCIDO" | "HISTORICO";
 
-      if (endDate < today) {
-        nextStatus = "VENCIDO";
-      } else if (endDate <= threshold) {
-        nextStatus = "POR_VENCER";
-      } else {
-        nextStatus = "ACTIVA";
-      }
+      if (endDate < historicalThreshold) {
+          nextStatus = "HISTORICO";
+        } else if (endDate < today) {
+          nextStatus = "VENCIDO";
+        } else if (endDate <= threshold) {
+          nextStatus = "POR_VENCER";
+        } else {
+          nextStatus = "ACTIVA";
+        }
 
       if (policy.status !== nextStatus) {
         await prisma.policy.update({
