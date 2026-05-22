@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/authorization";
+import DashboardPieChartModal from "@/components/dashboard/DashboardPieChartModal";
 
 export const dynamic = "force-dynamic";
 
@@ -145,19 +146,38 @@ export default async function DashboardPage({
   const { start, end } = getMonthRange(year, month);
 
   const policies = await prisma.policy.findMany({
-    where: {
-      endDate: {
-        gte: start,
-        lt: end,
-      },
+  where: {
+    endDate: {
+      gte: start,
+      lt: end,
     },
-    include: {
-      insurer: true,
-    },
-    orderBy: {
-      endDate: "asc",
-    },
-  });
+  },
+  include: {
+    insurer: true,
+  },
+  orderBy: {
+    endDate: "asc",
+  },
+});
+
+const statusGroups = await prisma.policy.groupBy({
+  by: ["status"],
+  _count: {
+    status: true,
+  },
+});
+
+const countByStatus = new Map(
+  statusGroups.map((item) => [item.status, item._count.status])
+);
+
+const counts = {
+  activa: countByStatus.get("ACTIVA") ?? 0,
+  porVencer: countByStatus.get("POR_VENCER") ?? 0,
+  vencido: countByStatus.get("VENCIDO") ?? 0,
+  enProceso: countByStatus.get("EN_PROCESO") ?? 0,
+  historico: countByStatus.get("HISTORICO") ?? 0,
+};
 
   const policiesByDay = new Map<number, typeof policies>();
 
@@ -188,13 +208,12 @@ export default async function DashboardPage({
     cells.push(null);
   }
 
-  const counts = {
-    activa: policies.filter((p) => p.status === "ACTIVA").length,
-    porVencer: policies.filter((p) => p.status === "POR_VENCER").length,
-    vencido: policies.filter((p) => p.status === "VENCIDO").length,
-    enProceso: policies.filter((p) => p.status === "EN_PROCESO").length,
-    historico: policies.filter((p) => p.status === "HISTORICO").length,
-  };
+  const allPolicies = await prisma.policy.findMany({
+  select: {
+    status: true,
+    branch: true,
+  },
+});
 
   return (
     <div className="space-y-6">
@@ -214,6 +233,15 @@ export default async function DashboardPage({
             >
               ← Mes anterior
             </a>
+
+            <a
+              href={`/seguros/dashboard`}
+              className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              Mes actual
+            </a>
+
+            <DashboardPieChartModal policies={allPolicies} />
 
             <div className="rounded-lg bg-[#043230] px-4 py-2 text-sm font-medium capitalize text-white">
               {monthLabel(year, month)}
