@@ -5,6 +5,28 @@ import { formatDateOnly } from "@/lib/dateOnly";
 
 export const dynamic = "force-dynamic";
 
+function wrapText(text: string, font: any, fontSize: number, maxWidth: number) {
+  const words = text.split(/\s+/);
+  const lines: string[] = [];
+  let currentLine = "";
+
+  for (const word of words) {
+    const testLine = currentLine ? `${currentLine} ${word}` : word;
+    const width = font.widthOfTextAtSize(testLine, fontSize);
+
+    if (width <= maxWidth) {
+      currentLine = testLine;
+    } else {
+      if (currentLine) lines.push(currentLine);
+      currentLine = word;
+    }
+  }
+
+  if (currentLine) lines.push(currentLine);
+
+  return lines;
+}
+
 function money(value: unknown, currency?: string | null) {
   if (value == null) return "-";
 
@@ -88,29 +110,36 @@ export async function GET(
     ];
 
     for (const [label, value] of rows) {
-      if (y < 60) {
-        page = pdfDoc.addPage([595.28, 841.89]);
-        y = 791.89;
-      }
+  const valueX = left + labelWidth;
+  const valueMaxWidth = 595.28 - valueX - 50;
+  const valueLines = wrapText(value, font, 10, valueMaxWidth);
+  const rowHeight = Math.max(lineHeight, valueLines.length * lineHeight);
 
-      page.drawText(`${label}:`, {
-        x: left,
-        y,
-        size: 10,
-        font: fontBold,
-        color: rgb(0.15, 0.15, 0.15),
-      });
+  if (y - rowHeight < 60) {
+    page = pdfDoc.addPage([595.28, 841.89]);
+    y = 791.89;
+  }
 
-      page.drawText(value, {
-        x: left + labelWidth,
-        y,
-        size: 10,
-        font,
-        color: rgb(0.2, 0.2, 0.2),
-      });
+  page.drawText(`${label}:`, {
+    x: left,
+    y,
+    size: 10,
+    font: fontBold,
+    color: rgb(0.15, 0.15, 0.15),
+  });
 
-      y -= lineHeight;
-    }
+  valueLines.forEach((line, index) => {
+    page.drawText(line, {
+      x: valueX,
+      y: y - index * lineHeight,
+      size: 10,
+      font,
+      color: rgb(0.2, 0.2, 0.2),
+    });
+  });
+
+  y -= rowHeight;
+}
 
     y -= 10;
 
