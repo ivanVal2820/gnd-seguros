@@ -20,6 +20,10 @@ model Insurer {
   id        String   @id @default(cuid())
   name      String   @unique
   code      String?  @unique
+  contact   String?
+  email     String?
+  phone     String?
+  website   String?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -33,6 +37,7 @@ model Policy {
   branch          String?
   insuredName     String?
   policyType      String?
+  policyCount Int @default(1)
   status          String             @default("EN_PROCESO")
   startDate       DateTime?
   endDate         DateTime?

@@ -328,60 +328,81 @@ export default function EditPolicyButton({
           <Section title="Importes">
             <div>
               <FieldLabel>Costo</FieldLabel>
-              <input
-                name="policyCost"
-                type="number"
-                step="0.01"
-                defaultValue={decimalToString(policy.policyCost)}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
-                disabled={pending}
-              />
+              <div className="relative">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+                  $
+                </span>
+                <input
+                  name="policyCost"
+                  type="number"
+                  step="0.01"
+                  defaultValue={decimalToString(policy.policyCost)}
+                  className="w-full rounded-lg border py-2 pl-7 pr-3 text-sm"
+                  disabled={pending}
+                />
+              </div>
             </div>
 
             <div>
               <FieldLabel>Costo emisión póliza</FieldLabel>
-              <input
-                name="issuanceCost"
-                type="number"
-                step="0.01"
-                defaultValue={decimalToString(policy.issuanceCost)}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
-                disabled={pending}
-              />
+              <div className="relative">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+                  $
+                </span>
+                <input
+                  name="issuanceCost"
+                  type="number"
+                  step="0.01"
+                  defaultValue={decimalToString(policy.issuanceCost)}
+                  className="w-full rounded-lg border py-2 pl-7 pr-3 text-sm"
+                  disabled={pending}
+                />
+              </div>
             </div>
 
             <div>
               <FieldLabel>IVA</FieldLabel>
-              <input
-                name="vat"
-                type="number"
-                step="0.01"
-                defaultValue={decimalToString(policy.vat)}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
-                disabled={pending}
-              />
+              <div className="relative">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+                  $
+                </span>
+                <input
+                  name="vat"
+                  type="number"
+                  step="0.01"
+                  defaultValue={decimalToString(policy.vat)}
+                  className="w-full rounded-lg border py-2 pl-7 pr-3 text-sm"
+                  disabled={pending}
+                />
+              </div>
             </div>
 
             <div>
               <FieldLabel>Gran total</FieldLabel>
-              <input
-                name="grandTotal"
-                type="number"
-                step="0.01"
-                defaultValue={decimalToString(policy.grandTotal)}
-                className="w-full rounded-lg border px-3 py-2 text-sm"
-                disabled={pending}
-              />
+              <div className="relative">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+                  $
+                </span>
+                <input
+                  name="grandTotal"
+                  type="number"
+                  step="0.01"
+                  defaultValue={decimalToString(policy.grandTotal)}
+                  className="w-full rounded-lg border py-2 pl-7 pr-3 text-sm"
+                  disabled={pending}
+                />
+              </div>
             </div>
           </Section>
 
-          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-            <FieldLabel>Notas</FieldLabel>
+          <div className="md:col-span-2">
+            <label className="text-sm font-medium text-gray-700">Notas</label>
             <textarea
               name="notes"
+              rows={5}
               defaultValue={policy.notes ?? ""}
-              className="min-h-[110px] w-full rounded-lg border px-3 py-2 text-sm"
-              disabled={pending}
+              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+              placeholder="Captura una línea por unidad, comentario o detalle relevante..."
             />
           </div>
 

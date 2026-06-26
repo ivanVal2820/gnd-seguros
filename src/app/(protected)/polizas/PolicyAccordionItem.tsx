@@ -167,8 +167,8 @@ export default function PolicyAccordionItem({
             <div><span className="font-medium">Costo emisión:</span> {decimalToString(policy.issuanceCost)}</div>
             <div><span className="font-medium">IVA:</span> {decimalToString(policy.vat)}</div>
             <div><span className="font-medium">Gran total:</span> {decimalToString(policy.grandTotal)}</div>
-            <div className="md:col-span-2">
-              <span className="font-medium">Notas:</span> {policy.notes || "-"}
+            <div className="whitespace-pre-line text-sm text-gray-700">
+              {policy.notes || "-"}
             </div>
           </div>
 

@@ -6,23 +6,32 @@ import { formatDateOnly } from "@/lib/dateOnly";
 export const dynamic = "force-dynamic";
 
 function wrapText(text: string, font: any, fontSize: number, maxWidth: number) {
-  const words = text.split(/\s+/);
+  const paragraphs = String(text || "-").split(/\r?\n/);
   const lines: string[] = [];
-  let currentLine = "";
 
-  for (const word of words) {
-    const testLine = currentLine ? `${currentLine} ${word}` : word;
-    const width = font.widthOfTextAtSize(testLine, fontSize);
+  for (const paragraph of paragraphs) {
+    const words = paragraph.split(/\s+/).filter(Boolean);
+    let currentLine = "";
 
-    if (width <= maxWidth) {
-      currentLine = testLine;
-    } else {
-      if (currentLine) lines.push(currentLine);
-      currentLine = word;
+    if (words.length === 0) {
+      lines.push("");
+      continue;
     }
-  }
 
-  if (currentLine) lines.push(currentLine);
+    for (const word of words) {
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      const width = font.widthOfTextAtSize(testLine, fontSize);
+
+      if (width <= maxWidth) {
+        currentLine = testLine;
+      } else {
+        if (currentLine) lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+
+    if (currentLine) lines.push(currentLine);
+  }
 
   return lines;
 }
